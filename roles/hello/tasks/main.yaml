@@ -1,0 +1,98 @@
+---
+
+  - name: Namespace
+    k8s:
+      name: "{{ app_ns }}"
+      api_version: v1
+      kind: Namespace
+      state: present
+  
+  - name: Deployment
+    k8s:
+      state: present
+      definition:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: "{{ app_name }}"
+          namespace: "{{ app_ns }}"
+          labels:
+            app: "{{ app_name }}"
+        spec:
+          replicas: "{{ app_rs }}"
+          selector:
+            matchLabels:
+              app: "{{ app_name }}"
+          template:
+            metadata:
+              labels:
+                app: "{{ app_name }}"
+            spec:
+              containers:
+              - name: "{{ app_name }}"
+                image: "{{ app_image }}"
+                env:
+                  - name: MESSAGE
+                    value: "{{ app_msg }}"
+                ports:
+                  - containerPort: "{{ app_port }}"
+              nodeSelector:
+                type: "{{ app_node }}"
+  - name: Service
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          labels:
+            app: "{{ app_name }}"
+          name: "{{ app_name }}"
+          namespace: "{{ app_ns }}"
+        spec:
+          ports:
+          - port: "{{ app_port }}"
+            protocol: TCP
+            targetPort: "{{ app_port }}"
+          selector:
+            app: "{{ app_name }}"
+          sessionAffinity: None
+          type: ClusterIP
+
+  - name: Ingress
+    k8s:
+      state: present
+      definition:
+        apiVersion: extensions/v1beta1
+        kind: Ingress      
+        metadata:
+          name: "{{ app_name }}"
+          namespace: "{{ app_ns }}"
+        spec:
+          rules:
+          - host: "{{ app_url }}"
+            http:
+              paths:
+              - backend:
+                  serviceName: "{{ app_name }}"
+                  servicePort: "{{ app_port }}"
+                path: /
+                pathType: Prefix
+          - host: localhost
+            http:
+              paths:
+              - backend:
+                  serviceName: "{{ app_name }}"
+                  servicePort: "{{ app_port }}"
+                path: /
+                pathType: Prefix
+
+  - name: Check {{ app_name }}
+    uri:
+      url: "http://{{ app_url }}"
+      method: GET
+      status_code: [200]
+    register: result
+    until: result.status == 200
+    retries: 25
+    delay: 5

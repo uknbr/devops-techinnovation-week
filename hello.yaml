@@ -1,0 +1,10 @@
+---
+
+- hosts: master
+  gather_facts: no
+  become: no
+  roles:
+    - role: hello
+  vars:    
+    app_rs: 2
+    app_msg: "TechInnovation Week 2022"

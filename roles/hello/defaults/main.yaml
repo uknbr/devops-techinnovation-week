@@ -1,0 +1,10 @@
+---
+app_port: 8080
+app_name: hello-florinda
+app_ns: hello
+app_image: myoung34/armhf-hello-kubernetes:latest
+app_url: hello.192.168.15.36.traefik.me
+app_node: worker
+app_rs: 2
+app_msg: UP and Running
+kubeconfig: /home/pi/.kube/config

@@ -1,0 +1,20 @@
+name: Deploy
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Ansible Lint
+        run: ansible-lint -v .
+
+      - name: Ansible Playbook
+        run: ansible-playbook hello.yaml
