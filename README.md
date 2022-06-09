@@ -25,7 +25,7 @@
 ---
 
 ### Requirements
-- Kubernetes Cluster
+- Kubernetes
 - Ansible
 - [GitHub runner](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners)
 
@@ -33,7 +33,7 @@
 - [playbook](hello.yaml)
 - [kubernetes](cluster.ini)
 
-### GitHub Action Workflow
+### GitHub Actions Workflow
 ```terminal
 $ mkdir .github/workflows/
 $ cp -fv CD/deploy.yaml .github/workflows/deploy.yaml
